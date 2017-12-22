@@ -1,0 +1,58 @@
+public class Pixel{
+  
+  //has 3 integer attributes, red, green and blue
+  private int red;
+  private int green;
+  private int blue;
+  
+  //constructor 1:
+  public Pixel(int r, int g, int b){
+    //must make sure that each number is in the range from 0 to 255
+    if(r > 255 || r <0 || g > 255 || g < 0 || b > 255 || b <0){
+      //throw an exception if at least one of the numbers isn't in the range
+      throw new IllegalArgumentException("range of each number should be from 0 to 255");
+    }
+    else{
+      this.red = r;
+      this.green = g;
+      this.blue = b;
+    }
+  }
+  
+  //constructor 2
+  public Pixel(int intensity){
+    //must make sure the intensity is in the range
+    if(intensity > 255 || intensity < 0){
+      throw new IllegalArgumentException("number must be between 0 and 255");
+    }
+    else{
+      red = intensity;
+      green = intensity;
+      blue = intensity;
+    }
+  }
+  
+  //get method for red
+  public int getRed(){
+    return red;
+  }
+  
+  //get method for green
+  
+  public int getGreen(){
+    return green;
+  }
+  
+  //get method for blue
+  
+  public int getBlue(){
+    return blue;
+  }
+  
+  
+  public int grey(){
+    double avg = (((red + green+ blue)/3.0) +0.5);
+    return (int) avg;
+  }
+ 
+}
