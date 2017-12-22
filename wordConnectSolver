@@ -1,0 +1,157 @@
+//a program that solved things like scrabble or wordConnect
+//finds the words that can be written by the same letters
+
+import java.util.*;
+import java.io.*;
+import java.util.ArrayList;
+
+
+public class WordConnectSolver{
+  
+  static HashSet<String> myDictionary; // this is where the words of the dictionary are stored
+  
+  
+  // Reads dictionary from file
+  public static void readDictionaryFromFile(String fileName) throws Exception {
+    myDictionary=new HashSet<String>();
+    
+    BufferedReader myFileReader = new BufferedReader(new FileReader(fileName) );
+    
+    String word;
+    while ((word=myFileReader.readLine())!=null) myDictionary.add(word);
+    
+    myFileReader.close();
+  }
+  
+
+  static ArrayList three = new ArrayList();
+  static ArrayList four = new ArrayList();
+  static ArrayList five = new ArrayList();
+  static ArrayList more = new ArrayList();
+  
+  public static void allWords(char availableLetters[], String prefix) {
+    String tempLongest ="";
+    String attempt="";
+    
+    if (myDictionary.contains(prefix)) {
+      if (prefix.length() == 3){
+        three.add(prefix);
+      }
+      if (prefix.length() == 4){
+        four.add(prefix);
+      }
+      if (prefix.length() == 5){
+        five.add(prefix);
+      }
+      if (prefix.length() >5){
+        more.add(prefix);
+      }
+    }
+    for (int i=0; i < availableLetters.length; i++){
+      attempt = prefix + availableLetters[i];
+      tempLongest = attempt;
+      char remaining[] = new char [availableLetters.length - 1];
+      for (int j = 0; j<i; j++) {
+        remaining[j] = availableLetters[j];
+      }
+      for (int j = i+1; j<availableLetters.length; j++) {
+        remaining[j-1] = availableLetters[j];
+      }
+      allWords(remaining, tempLongest);
+      
+    }
+  }
+  
+  public static void main (String args[]) throws Exception {
+    
+    // First, read the dictionary
+    try {
+      readDictionaryFromFile("englishDictionary.txt");
+    }
+    catch(Exception e) {
+      System.out.println("Error reading the dictionary: "+e);
+    }
+    
+    
+    // Ask user to type in letters
+    BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in) );
+    char letters[]; 
+    do {
+      System.out.println("Enter your letters (no spaces or commas):");
+      
+      letters = keyboard.readLine().toCharArray();
+      
+      // now, enumerate the words that can be formed
+      allWords(letters, "");
+      
+      
+      for (int i=0; i<three.size()-1; i++){
+        for (int j=i+1; j<three.size(); j++){
+          if(three.get(i).toString().equals(three.get(j).toString())){
+            three.remove(j);
+          }
+        }
+      }
+      
+      for (int i=0; i<four.size()-1; i++){
+        for (int j=i+1; j<four.size(); j++){
+          if(four.get(i).toString().equals(four.get(j).toString())){
+            four.remove(j);
+          }
+        }
+      }
+      
+      for (int i=0; i<five.size()-1; i++){
+        for (int j=i+1; j<five.size(); j++){
+          if(five.get(i).toString().equals(five.get(j).toString())){
+            five.remove(j);
+          }
+        }
+      }
+      
+      for (int i=0; i<more.size()-1; i++){
+        for (int j=i+1; j<more.size(); j++){
+          if(more.get(i).toString().equals(more.get(j).toString())){
+            more.remove(j);
+          }
+        }
+      }
+      
+      
+      System.out.println("Number of words found is " + (three.size()+four.size()+five.size()+more.size()));
+     
+      if(three.isEmpty() == false){
+        System.out.println("The words with three letters are: ");
+        for(int i=0; i < three.size(); i++){
+          System.out.println(three.get(i));
+        }
+      }
+      if(four.isEmpty() == false){
+        System.out.println("The words with four letters are: ");
+        for(int i=0; i < four.size(); i++){
+          System.out.println(four.get(i));
+        }
+      }
+      if(five.isEmpty() == false){
+        System.out.println("The words with five letters are: ");
+        for(int i=0; i < five.size(); i++){
+          System.out.println(five.get(i));
+        }
+      }
+      if(more.isEmpty() == false){
+        System.out.println("The words with more than five letters are: ");
+        for(int i=0; i < more.size(); i++){
+          System.out.println(more.get(i));
+        }
+      }
+      three.clear();
+      four.clear();
+      five.clear();
+      more.clear();
+      
+    } while (letters.length!=0);
+    
+    keyboard.close();
+    
+  }
+}
