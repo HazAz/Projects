@@ -1,0 +1,144 @@
+public class Photoshop{
+  public static void main(String[] args){
+    if(args.length < 4){
+      //if args length < 4, exit gracefully. Else, continue
+      System.out.println("you need to input the input file name, the output file name, the output file format and the operation");
+    }
+    else{
+      String inputFile = args[0];
+      String outputFile = args[1];
+      String formatOutputFile = args[2];
+      //throw error here if args[2] is not pnm or pgm and exit gracefully. else, continue
+      boolean b = args[2].equals("pnm") || args[2].equals("pgm");
+      if(b == false){
+        System.out.println("your output format should be pnm or pgm");
+      }
+      else{
+        //throw error here if args[3] is not fh, cr, gs, fv. Else, continue.
+        String operation = args[3];
+        boolean t = args[3].equals("-fh") || args[3].equals("-fv") 
+          || args[3].equals("-gs") || args[3].equals("-cr"); 
+        if(t == false){
+          System.out.println("the operation must be -fh or -fv or -gs or -cr");
+        }
+        else{
+          //make if statement for cr to add more args
+          if(args[3].equals("-cr")){
+            //if args length is not 8 with cr, throw error and exit gracefully
+            if(args.length != 8){
+              System.out.println("If you are using -cr, there needs to be 8 inputs");
+            }
+            else{
+              try{
+                int startX = Integer.parseInt(args[4]);
+                int startY = Integer.parseInt(args[5]);
+                int endX = Integer.parseInt(args[6]);
+                int endY = Integer.parseInt(args[7]);
+                //continue code assuming nothing was caught
+                try{
+                  Image image = ImageFileUtilities.read(args[0]);
+                  if(image.getMetadata().equals("a")){
+                    //if failimage is printed
+                    System.out.println("The image is the wrong type");
+                  }
+                  else{
+                    try{
+                      image.crop(startX, startY, endX, endY);
+                      if(args[2].equals("pgm")){
+                        ImageFileUtilities.writePgm(image, args[1]);
+                      }
+                      else{
+                        ImageFileUtilities.writePnm(image, args[1]);
+                      }
+                    }
+                    //catch if something happened while cropping
+                    catch(Exception e){
+                      System.out.println("Something went wrong while cropping the image");
+                    }
+                  }
+                }
+                //catch if something happened while reading image (like incorrect input)
+                catch(Exception e){
+                  System.out.println("Something went wrong while reading the image");
+                }
+              }
+              //catch if the last 4 args inputs were nut ints
+              catch(Exception e){
+                System.out.println("The last 4 inputs must be integers");
+              }
+            }
+          }
+          //now if args[3] was fh
+          else{
+            if(args[3].equals("-fh")){
+              try{
+                Image image = ImageFileUtilities.read(args[0]);
+               if(image.getMetadata().equals("a")){
+                  //if failimage is printed
+                  System.out.println("The image is the wrong type");
+                }
+                else{
+                  image.flip(true);
+                  if(args[2].equals("-pgm")){
+                    ImageFileUtilities.writePgm(image, args[1]);
+                  }
+                  else{
+                    ImageFileUtilities.writePnm(image, args[1]);
+                  }
+                }
+              }
+              catch(Exception e){
+                System.out.println("Something went wrong with reading the image.");
+              }
+            }
+            //if args[3] was fv
+            if(args[3].equals("-fv")){
+              try{
+                Image image = ImageFileUtilities.read(args[0]);
+                if(image.getMetadata().equals("a")){
+                  //if failimage is printed
+                  System.out.println("The image is the wrong type");
+                }
+                else{
+                  image.flip(false);
+                  if(args[2].equals("pgm")){
+                    ImageFileUtilities.writePgm(image, args[1]);
+                  }
+                  else{
+                    ImageFileUtilities.writePnm(image, args[1]);
+                  }
+                }
+              }
+              catch(Exception e){
+                System.out.println("Something went wrong with reading the image.");
+              }
+            }
+            //if args[3] was gs
+            if(args[3].equals("-gs")){
+              try{
+                Image image = ImageFileUtilities.read(args[0]);
+                if(image.getMetadata().equals("a")){
+                  //if failimage is printed
+                  System.out.println("The image is the wrong type");
+                }
+                else{
+                  image.toGrey();
+                  if(args[2].equals("pgm")){
+                    ImageFileUtilities.writePgm(image, args[1]);
+                  }
+                  else{
+                    ImageFileUtilities.writePnm(image, args[1]);
+                  }
+                }
+              }
+              catch(Exception e){
+                System.out.println("Something went wrong with reading the image.");
+              }
+              
+            }
+          } 
+        }
+      }
+    }
+  }
+}
