@@ -1,0 +1,117 @@
+public class Image{
+  //stores info about the image in a text format
+  private String metadata;
+  //stores the upperbound of the values of the pixels
+  private int maxRange;
+  //stores the values of the pixels.
+  //length of Pixel is height, length of Pixel[] is width
+  private Pixel[][] data;
+  
+  //constructor
+  public Image(String mData, int mRange, Pixel[][] d){
+    if(mRange < 0){
+      throw new IllegalArgumentException("max range can't be negative");
+    }
+    else{
+      this.metadata = mData;
+      this.maxRange = mRange;
+      
+      //make a copy of d, call it dataCopy. assign data to be dataCopy
+      Pixel[][] dataCopy = new Pixel[d.length][d[0].length];
+      for(int i = 0; i < d.length; i++){
+        for(int j=0; j<d[i].length; j++){
+          dataCopy[i][j] = d[i][j];
+          
+        }
+      }
+      this.data = dataCopy;
+    }
+    
+  }
+  
+  //get method for metadata
+  public String getMetadata(){
+    return this.metadata;
+  }
+  
+  //get method for maxrange
+  public int getMaxRange(){
+    return this.maxRange;
+  }
+  
+  //get method for width
+  public int getWidth(){
+    return this.data[0].length;
+  }
+  
+  //get method for height
+  public int getHeight(){
+    return this.data.length;
+  }
+  
+  //get method for pixel at indeces i and j
+  public Pixel getPixel(int i, int j){
+    return this.data[i][j];
+  }
+  
+  
+  //flip method
+  public void flip(boolean horizontal){
+    Pixel temp;
+    //change width data[i]
+    //split the array into 2. set temp to be the j element
+    //set j to be the data[0].length - j - 1.
+    //set data[i][data[0].length-j-1] to be temp
+    //flipping the array
+    if(horizontal){
+      for(int i =0; i < data.length; i++){
+        for(int j =0; j< data[0].length/2; j++){
+          temp = data[i][j];
+          data[i][j] = data[i][data[0].length - j - 1];
+          data[i][data[0].length - j - 1] = temp;
+          
+        }
+      }
+    }
+    //change height data.
+    //same as we did before, but with the i
+    else{
+      for(int i =0; i < data.length/2; i++){
+        for(int j =0; j< data[0].length; j++){
+          temp = data[i][j];
+          data[i][j] = data[data.length - i - 1][j];
+          data[data.length - i -1][j] = temp;
+        }
+      }
+    }
+  }
+  
+  
+  //toGrey method
+  
+  public void toGrey(){
+    for(int i = 0; i < data.length; i++){
+      for(int j = 0; j < data[i].length; j++){
+        //call the grey method for each element, then set data[i][j] to be the grey element.
+        int x = data[i][j].grey();
+        Pixel fill = new Pixel(x);
+        data[i][j] = fill;
+        
+      }
+    }
+  }
+  
+  //crop method
+  public void crop(int startX, int startY, int endX, int endY){
+    if(startX > endX || startY > endY || startX < 0 || startY < 0 || endX > data.length || endY > data[0].length){
+      throw new IllegalArgumentException("Incorrect input.");
+    }
+    Pixel[][] cropData = new Pixel[endY - startY][endX-startX];
+    for (int i = 0; i < endY - startY; i++){
+      for (int j = 0; j < endX - startX; j++){
+        cropData[i][j] = data[i+startY][j+startX];
+      }
+    }
+    data = cropData;
+  }
+}
