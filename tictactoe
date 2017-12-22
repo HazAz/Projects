@@ -1,0 +1,465 @@
+//a program that makes u play tictactoe with the AI or with a second player
+//part of this was an assignment to students I was tutoring
+
+import java.util.*;
+public class TicTacToe { 
+  public static void main(String[] args) { 
+    play();
+  }
+  
+  //A. createBoard Method
+  
+  public static char[][] createBoard(int n){
+    char [][] dimension = new char[n][n];
+    for (int i = 0;i<n;i++){
+      for (int j = 0;j<n;j++){
+        dimension[i][j] = ' '; 
+      }   
+    }
+    return dimension; 
+  }
+  
+  
+  //B. displayBoard Method
+  
+  public static void displayBoard(char[][] array){   
+    int counter = 0;
+    for(int i=0; i<array.length*2+1;i++){
+      int counter2 = 0;
+      for(int j=0; j<array.length*2+1;j++){
+        if (((i%2) == 0) && (j%2==0)) {
+          
+          System.out.print("+");
+        }
+        else if (i%2 == 0 && j%2 ==1 ){
+          System.out.print("-");
+          
+        }
+        else if(i%2 ==1 && j%2 ==0){
+          System.out.print("|");               
+          
+        } else {
+          System.out.print(array[counter][counter2]);
+          
+        }
+        if (j%2 ==1){
+          counter2++;
+        }
+      }
+      if (i%2 ==1){
+        counter++;
+      }              
+      System.out.println();     
+    } 
+  }
+  
+  
+  //C. writeOnBoard Method 
+  
+  public static void writeOnBoard(char[][] A,char c, int x, int y){
+    if(x >= A.length || x<0) {
+      throw new IllegalArgumentException("ERROR: This x value does not represent a cell on the board!");
+    }
+    if(y >= A.length || y<0) {
+      throw new IllegalArgumentException("ERROR:This y value does not represent a cell on the board!");
+    }                                   
+    if( A[x][y] != ' '){
+      throw new IllegalArgumentException("ERROR:The cell already contains a character that is not the space character");
+      
+    }else{
+      A[x][y] = c;
+    }
+  }
+  
+  //D. getUserMove method
+  public static void getUserMove1(char[][] f) {
+    int x;
+    int y;
+    Scanner read = new Scanner(System.in);
+    System.out.print("Where would you like to place your move? for example: x y");
+    x = read.nextInt();
+    y = read.nextInt();
+    
+    while(x >= f.length || x<0) {
+      read = new Scanner(System.in);
+      System.out.print("Please enter a new row!");
+      x = read.nextInt();                                            
+    }
+    while(y >= f.length || y<0) {
+      read = new Scanner(System.in);
+      System.out.print("Please enter a new column!");
+      y = read.nextInt(); 
+    }                                   
+    while( f[x][y] != ' '){
+      read = new Scanner(System.in);
+      System.out.print("Please enter a new move!");
+      x = read.nextInt();  
+      y = read.nextInt(); 
+    }
+    writeOnBoard(f,'x',x,y);
+  }
+  
+  public static void getUserMove2(char[][] f) {
+    int x;
+    int y;
+    Scanner read = new Scanner(System.in);
+    System.out.print("Where would you like to place your move? for example: x y");
+    x = read.nextInt();
+    y = read.nextInt();
+    
+    while(x >= f.length || x<0) {
+      read = new Scanner(System.in);
+      System.out.print("Please enter a new row!");
+      x = read.nextInt();                                            
+    }
+    while(y >= f.length || y<0) {
+      read = new Scanner(System.in);
+      System.out.print("Please enter a new column!");
+      y = read.nextInt(); 
+    }                                   
+    while( f[x][y] != ' '){
+      read = new Scanner(System.in);
+      System.out.print("Please enter a new move!");
+      x = read.nextInt();  
+      y = read.nextInt(); 
+    }
+    writeOnBoard(f,'o',x,y);
+    
+  }
+  
+  
+  //E. Check for obvious move
+  public static int spaceCounter(char[] y){
+    int counter =0;
+    int j=-1;
+    for(int i=0; i<y.length; i++){
+      if(y[i]==' '){
+        counter++;
+        j=i;
+      }
+    }
+    if(counter == 1){
+      return j;
+    }
+    return -1;
+  }
+  
+  
+  public static boolean checkSame(char[] y){
+    if(spaceCounter(y) == -1){
+      return false;
+    }
+    else{
+      int space = spaceCounter(y);
+      char[] x = new char[y.length-1];
+      for(int i=0; i<space; i++){
+        x[i] = y[i];
+      }
+      for(int i=space; i<x.length; i++){
+        x[i] = y[i+1];
+      }
+      
+      for(int i =0; i<x.length-1; i++){
+        if(x[i] != x[i+1]){
+          return false;
+        }
+      }
+      return true;
+    }
+  }
+  
+  
+  
+  public static boolean checkForObviousMove(char [][] y){
+    //for rows
+    int checker = 0;
+    int a=-1;
+    int b=-1;
+    int l=-1;
+    //checker should be 1 if rows
+    for(int i=0; i<y.length; i++){
+      if(checkSame(y[i])){
+        l = spaceCounter(y[i]);
+        if(y[i][0]=='o' || y[i][1]=='o'){
+          writeOnBoard(y, 'o', i, l);
+          return true;
+        }
+        checker=1;
+        a=i;
+        b=l;
+      }
+    }
+    //create replica
+    char[][] replica = new char[y.length][y.length];
+    for(int i=0; i<y.length; i++){
+      for(int j=0; j<y.length; j++){
+        replica[i][j]=y[j][i]; 
+      }
+    }
+    //check columns
+    //checker should be 2 if columns
+    for(int i=0; i<y.length; i++){
+      for(int j=0; j<y.length; j++){
+        if(checkSame(replica[i])){
+          l = spaceCounter(replica[i]);
+          if(replica[i][0]=='o' || replica[i][1]=='o'){
+            writeOnBoard(y, 'o', l, i);
+            return true;
+          }
+          checker =2;
+          a=l;
+          b=i;
+        }
+      }
+    }
+    //check diagonals
+    //checker should be 3 if diagonals
+    char[] diagonals = new char[y.length];
+    
+    for(int i=0; i<y.length; i++){
+      diagonals[i]= y[i][i];
+    }
+    
+    if(checkSame(diagonals)){
+      l = spaceCounter(diagonals);
+      if(y[0][0]=='o' || y[1][1]=='o'){
+        writeOnBoard(y, 'o', l, l);
+        return true;
+      }
+      checker =3;
+      a=l;
+      b=l;
+    }
+    
+    
+    //check antidiagonal
+    //checker should be 4 for antidiagonals
+    char[] antidiagonals = new char[y.length];
+    
+    for(int i=0; i<y.length; i++){
+      for(int j=0; j<y.length; j++){
+        if(i+j==y.length-1){
+          antidiagonals[i]= y[i][j];
+        }
+      }
+    }
+    
+    if(checkSame(antidiagonals)){
+      l = spaceCounter(antidiagonals);
+      if(y[y.length-1][0]=='o' || y[0][y.length-1]=='o'){
+        writeOnBoard(y, 'o', l, y.length-l-1);
+        return true;
+      }
+      checker=4;
+      a=l;
+      b=y.length-l-1;
+    }
+    
+    if(checker==1 || checker==2 || checker==3 || checker==4){
+      writeOnBoard(y, 'o', a, b);
+      return true;
+    }
+    return false;  
+  }
+  
+  
+//F. getAIMove method
+  
+  public static void getAIMove(char [][] d){
+    if (checkForObviousMove(d) == false){
+      Random aiMove = new Random();
+      int x = aiMove.nextInt(d.length-1);
+      aiMove = new Random();
+      int y = aiMove.nextInt(d.length-1);
+      while( d[x][y]!= ' '){
+        aiMove = new Random();
+        x = aiMove.nextInt(d.length-1);
+        aiMove = new Random();
+        y = aiMove.nextInt(d.length-1);
+      }
+      writeOnBoard(d,'o',x,y);
+    }
+    
+  }
+  
+  
+  public static boolean same(char[] array){
+    for(int i=0; i<array.length-1; i++){
+      if(array[i]!=array[i+1]){
+        return false;
+      }
+    }
+    return true;
+  }
+  
+  public static char checkForWinner(char[][] array){
+    
+    //for rows
+    for(int i=0; i<array.length; i++){
+      if(same(array[i])){
+        if(array[i][0]=='o'){
+          return 'o';
+        }
+        if(array[i][0] =='x'){
+          return 'x';
+        }
+      }
+    }
+    
+    //for columns
+    //create replica
+    char[][] replica = new char[array.length][array.length];
+    for(int i=0; i<array.length; i++){
+      for(int j=0; j<array.length; j++){
+        replica[i][j]=array[j][i]; 
+      }
+    }
+    //check columns
+    //checker should be 2 if columns
+    for(int i=0; i<array.length; i++){
+      if(same(replica[i])){
+        if(replica[i][0]=='o'){
+          return 'o';
+        }
+        if(replica[i][0]=='x'){
+          return 'x';
+        }
+      }
+    }
+    
+    //diagonals
+    char[] diagonals = new char[array.length];
+    for(int i=0; i<array.length; i++){
+      diagonals[i]= array[i][i];
+    }
+    if(same(diagonals)){
+      if(array[0][0]=='o'){
+        return 'o';
+      }
+      if(array[0][0]=='x'){
+        return 'x';
+      }
+    }
+    
+    //antidiagonals
+    char[] antidiagonals = new char[array.length];
+    
+    for(int i=0; i<array.length; i++){
+      antidiagonals[i]= array[array.length-1-i][i];
+    }
+    if(same(antidiagonals)){
+      if(array[array.length-1][0]=='o'){
+        return 'o';
+      }
+      if(array[array.length-1][0]=='x'){
+        return 'x';
+      }
+    }  
+    return ' '; 
+  }
+  
+  public static void play(){
+    System.out.println("How many players? (1 or 2)");
+    Scanner input = new Scanner(System.in);
+    int numPlayers = input.nextInt();
+    String name;
+    String name2="";
+    if(numPlayers ==1){
+      System.out.println("What is your name?");
+      input= new Scanner(System.in);
+      name = input.nextLine();
+    }
+    else{
+      System.out.println("What is player 1's name?");
+      input = new Scanner(System.in);
+      name = input.nextLine();
+      System.out.println("What is player 2's name?");
+      input = new Scanner(System.in);
+      name2 = input.nextLine(); 
+    }
+    
+    System.out.println("How many dimensions?");
+    input = new Scanner(System.in);
+    while(!input.hasNextInt()){
+      System.out.println("Enter a number");
+      input = new Scanner(System.in);
+    }
+    int dimensions = input.nextInt();
+    int counter = 0;
+    
+    char[][] board = createBoard(dimensions);
+    
+    Random toss = new Random();
+    int a= toss.nextInt(99);
+    if(a%2 == 1){
+      System.out.println("Result of cointoss: " + name + " get the first move");
+    }
+    else{
+      if(numPlayers==1){
+        System.out.println("Result of cointoss: AI get the first move");
+        getAIMove(board);
+        displayBoard(board);
+        counter++;
+      }
+      else{
+        System.out.println("Result of cointoss: " + name2 + " get the first move");
+        getUserMove2(board);
+        displayBoard(board);
+        counter++;
+      }
+      
+    }
+    
+    while(checkForWinner(board)==' ' || counter < board.length*board.length){
+      System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+      getUserMove1(board);
+      counter++;
+      displayBoard(board);
+      if(checkForWinner(board) == 'x'){
+        System.out.println(name + " won!");
+        break;
+      }
+      if(counter == board.length*board.length){
+        System.out.println("No winner, board is full");
+        break;
+      }
+      System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+      if(numPlayers==1){
+        boolean check = checkForObviousMove(board);
+        if(check){
+          System.out.println("AI TURN!");
+          counter++;
+          displayBoard(board);
+          if(checkForWinner(board)=='o'){
+            System.out.println("AI won!");
+            break;
+          }
+        }
+        else{
+          System.out.println("AI TURN!");
+          counter++;
+          getAIMove(board); 
+          displayBoard(board);
+        }
+        if(counter == board.length*board.length){
+          System.out.println("No winner, board is full");
+          break;
+        }
+      }
+      else{
+        System.out.println(name2 + "'s turn");
+        counter++;
+        getUserMove2(board);
+        displayBoard(board);
+        if(checkForWinner(board)=='o'){
+          System.out.println(name2 + " won!");
+          break;
+        }
+        if(counter == board.length*board.length){
+          System.out.println("No winner, board is full");
+          break;
+        }
+      }
+    }
+  }
+}
