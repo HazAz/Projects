@@ -1,0 +1,156 @@
+import java.util.Scanner;
+import java.io.*;
+public class ImageFileUtilities{
+  
+  //public static void main(String[] args) throws IOException{
+    //TEST FOR PGM IMAGE!
+    /*Image x = read("catskypegrey.pgm");
+    System.out.println(x.getMaxRange());
+    System.out.println(x.getMetadata());
+    System.out.println(x.getWidth());
+    System.out.println(x.getHeight());
+    
+    
+    //TEST FOR PNM IMAGE
+    Image y = read("catskype.pnm");
+    System.out.println(y.getMaxRange());
+    System.out.println(y.getMetadata());
+    System.out.println(y.getWidth());
+    System.out.println(y.getHeight());*/
+    
+  //}
+  //this code looks really weird. let me explain what i did
+  //first, THE RETURN STATEMENTS ARE INSIDE THE IF'S.
+  // I initiallized failPixel, and used it to initialize a failImage JUST TO FILL THE RETURN PART.
+  //IF THE IMAGE IS PGM OR PNM, failImage WILL NEVER BE RETURNED!
+  //method 1
+  //p2 = pgm, p3 = pnm
+  
+  public static Image read(String filename) throws IOException{
+    //INITIALIZING FAIL IMAGE
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Pixel[][] failPixel = new Pixel[1][2];
+    Pixel p = new Pixel(0);
+    Pixel q = new Pixel(0);
+    failPixel[0][0] = p;
+    failPixel[0][1] = q;
+    Image failImage = new Image ("a", 0, failPixel);
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //here the actual code begins.
+    Scanner sc = new Scanner(new File(filename));
+    
+    if (sc.hasNext("P2")){
+      //this is p2
+      String type = sc.nextLine();
+      String mData = "";
+      while(sc.hasNext("#")){
+        //these are the comments. They should be in metadata
+        String comment = sc.nextLine();
+        mData = mData + "\n " + comment;
+      }
+      // now the next line after the comments will correspond to the dimensions of the array.
+      int width = sc.nextInt();
+      int height = sc.nextInt();
+      Pixel[][] d = new Pixel[height][width];
+      int mRange = sc.nextInt();
+      for(int i = 0; i < height; i++){
+        for (int j = 0; j < width; j++){
+          Pixel pixel = new Pixel(sc.nextInt());
+          d[i][j] = pixel;
+        }
+      }
+      
+      
+      
+      Image image = new Image(mData, mRange, d);
+      sc.close();
+      return image;
+    }
+    
+    if(sc.hasNext("P3")){
+      //this is p3
+      String type = sc.nextLine();
+      String mData = "";
+      while(sc.hasNext("#")){
+        //these are the comments. They should be in metadata
+        String comment = sc.nextLine();
+        mData = mData + "\n" + comment;
+      }
+      // now the next line after the comments will correspond to the dimensions of the array.
+      int width = sc.nextInt();
+      int height = sc.nextInt();
+      Pixel[][] d = new Pixel[height][width];
+      int mRange = sc.nextInt();
+      for(int i = 0; i < height; i++){
+        for(int j = 0; j< width; j++){
+          int r = sc.nextInt();
+          int g = sc.nextInt();
+          int b = sc.nextInt();
+          Pixel pixel = new Pixel(r,g,b);
+          d[i][j] = pixel;
+        }
+      }
+      Image image = new Image(mData, mRange, d);
+      sc.close();
+      return image;
+    }
+    return failImage;
+  }
+  
+  
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //method 2
+  public static void writePnm(Image image, String filename) throws IOException{
+    //writes a P3 pnm file
+    //create file writer and buffered writer
+    FileWriter fw = new FileWriter(filename);
+    BufferedWriter bw = new BufferedWriter(fw);
+    
+    bw.write("P3 \n");
+    int height = image.getHeight();
+    int width = image.getWidth();
+    int maxRange = image.getMaxRange();
+    //get the height, width and max range and write the width and height on one line, max range on the next
+    bw.write(width + " " + height + "\n");
+    bw.write(maxRange + "\n");
+    for(int i=0; i< height; i++){
+      for(int j=0; j<width; j++){
+        //write down the red, green and blue pixels next to each other
+        bw.write(image.getPixel(i, j).getRed() +" " + image.getPixel(i, j).getGreen() 
+                   + " " + image.getPixel(i, j).getBlue() + " ");
+      }
+      bw.write("\n");
+    }
+    
+    bw.close();
+    fw.close();
+  }
+  
+  
+  
+  
+  //method 3
+  public static void writePgm(Image image, String filename) throws IOException{
+    //writes a P2 pgm file
+    //create file writer and buffered writer
+    FileWriter fw = new FileWriter(filename);
+    BufferedWriter bw = new BufferedWriter(fw);
+    
+    bw.write("P2 \n");
+    int height = image.getHeight();
+    int width = image.getWidth();
+    int maxRange = image.getMaxRange();
+    bw.write(width + " " + height + "\n");
+    bw.write(maxRange + "\n");
+    for(int i=0; i< height; i++){
+      for(int j=0; j<width; j++){
+        //every r,g,b in the pixel will have the same value (which is intesity)
+        bw.write(image.getPixel(i,j).getRed() +" ");
+      }
+      bw.write("\n");
+    }
+    
+    bw.close();
+    fw.close();
+  }
+}
