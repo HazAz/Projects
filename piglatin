@@ -1,0 +1,103 @@
+//a program that translates things into piglatin.
+
+import java.util.*;
+public class Piglatin{
+  public static void main(String[] args){
+    System.out.println("Enter the sentence you want to translate");
+    Scanner input = new Scanner(System.in);
+    String s = input.nextLine();
+    System.out.println("you entered: " + s);
+    System.out.println("translation: ");
+    displayTranslation(s);
+  }
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  public static boolean isAVowel(char letter){
+    if(letter == 'e' || letter == 'a' || letter =='u' || letter == 'o' || letter =='i'){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  public static int numberOfConstants(String word){
+    int counter =0;
+    for(int i=0; i<word.length(); i++){
+      if(!isAVowel(word.charAt(i))){
+        counter++;
+      }
+      else{
+        return counter;
+      }
+    }
+    return counter;
+  }
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+  public static int numberOfWords(String sentence){
+    int counter = 1;
+    for(int i=0; i<sentence.length(); i++){
+      if(sentence.charAt(i) == ' '){
+        counter++; 
+      }
+    }
+    return counter;   
+  }
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+  public static String translateOneWord(String word){
+    if(numberOfWords(word)>1){
+      System.out.println("more than one word was input. Please input only one word");
+      return "";
+    }
+    if(numberOfConstants(word)==0){
+      return word+"way";
+    }
+    String s=  "";
+    for(int i=0; i<word.length(); i++){
+      if(isAVowel(word.charAt(i))){
+        for (int j=i; j<word.length(); j++){
+          s = s + word.charAt(j);
+        }
+        break;
+      }
+    }
+    
+    for(int i=0; i < numberOfConstants(word); i++){
+      s = s + word.charAt(i);
+    }
+    return s+"ay";
+  }
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+  public static String[] tokenize(String sentence){
+    String[] result = new String[numberOfWords(sentence)];
+    for(int i =0; i< result.length; i++){
+      result[i]="";
+    }
+    
+    int counter=0;
+    for(int i=0; i<result.length; i++){
+      while(sentence.charAt(counter)!=' ' && counter !=sentence.length()-1){
+        result[i] = result[i] + sentence.charAt(counter);
+        counter++;
+      }
+      if(counter != sentence.length()-1){
+       counter++; 
+      }
+    }
+    result[result.length-1] = result[result.length-1] + sentence.charAt(counter);
+    
+    return result;
+  }
+  
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  
+  public static void displayTranslation(String sentence){
+    String[] s = tokenize(sentence);
+    for (int i=0; i<s.length; i++){
+      System.out.print(translateOneWord(s[i]) + " ");
+    }
+    System.out.println("");
+  }
+}
