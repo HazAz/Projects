@@ -3,6 +3,8 @@ public class ConnectFour{
   public static void main(String[] args){
     play();
   }
+  
+  //the method that created the board, which was a 2D array
   public static char[][] makeBoard(int n){
     char[][] board = new char[n][n];
     for(int i=0; i<n; i++){
@@ -12,6 +14,8 @@ public class ConnectFour{
     }
     return board;
   }
+  
+  //the method that would display the board
   public static void displayBoard(char[][] array){
     for(int i=0; i<array.length; i++){
       System.out.print(" "+i);
@@ -31,33 +35,35 @@ public class ConnectFour{
     }
   }
   
-  public static void writeOnBoard(char[][] board, char c, int x){
-    if(x >= board.length || x<0) throw new IllegalArgumentException("ERROR: This value does not represent a column on the board!");                                
-    if(board[0][x] != ' ') throw new IllegalArgumentException("ERROR:This column is full");
+  //the method that would add to the board
+  public static void writeOnBoard(char[][] board, char c, int position){
+    if(position >= board.length || position<0) throw new IllegalArgumentException("ERROR: This value does not represent a column on the board!");                                
+    if(board[0][position] != ' ') throw new IllegalArgumentException("ERROR:This column is full");
     for(int i=board.length-1; i>-1; i--){
-      if(board[i][x] == ' '){
-        board[i][x] = c;
+      if(board[i][position] == ' '){
+        board[i][position] = c;
         break;
       }
     }
   }
   
-  
+  //the method that would get the user's move.
   public static void getUserMove(char[][] board, int userNumber){
-    int x;
+    int number;
     Scanner read = new Scanner(System.in);
     System.out.print("Which column would you like to input your pin?");
-    x = read.nextInt();
+    number = read.nextInt();
     
-    while(x >= board.length || x<0 || board[0][x]!=' '){
+    while(number >= board.length || number<0 || board[0][number]!=' '){
       System.out.print("Please enter a new number!");
       read = new Scanner(System.in);
-      x = read.nextInt();                                            
+      number = read.nextInt();                                            
     }
-    if(userNumber==1) writeOnBoard(board,'x',x);
-    else writeOnBoard(board, 'o', x);
+    if(userNumber==1) writeOnBoard(board,'x',number);
+    else writeOnBoard(board, 'o', number);
   }
   
+  //the method that would check if there's a winner
   public static char checkForWinner(char[][] board){
     //columns
     for(int i=board.length-1; i>2; i--){
@@ -98,6 +104,7 @@ public class ConnectFour{
     return ' '; 
   }
   
+  //the play method
   public static void play(){
     System.out.println("What is player 1's name?");
     Scanner input = new Scanner(System.in);
