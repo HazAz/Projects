@@ -1,0 +1,95 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Nov 05 08:44:29 2017
+
+@author: david
+"""
+
+proton_data = {"name": "proton",
+                 "charge": 1,
+                 "mass": 1,
+                 "half-life": 1,
+                 "colour": 'r-',
+                 "decay_products": []}
+
+neutron_data = {"name": "neutron",
+                 "charge": 0,
+                 "mass": 1,
+                 "half-life": 1,
+                 "colour": 'r-',
+                 "decay_products": [("proton", "electron")]}
+
+lambda_data = {"name": "lambda",
+                 "charge": 0,
+                 "mass": 1.19,
+                 "half-life": 1./2.632e-10,
+                 "colour": 'm-',
+                 "decay_products": [("proton", "pionm"),
+                                    ("neutron","pion0")]}
+
+pion0_data = {"name": "pion0",
+                 "charge": 0,
+                 "mass": 0.1486,
+                 "half-life": 1./8.4e-17,
+                 "colour": 'k-',
+                 "decay_products": [("photon", "photon")]}
+
+pionm_data = {"name": "pionm",
+                 "charge": -1,
+                 "mass": 0.1486,
+                 "half-life": 1./2.6033e-8,
+                 "colour": 'xkcd:sky blue-',
+                 "decay_products": [("muonm", "photon")]}
+
+pionp_data = {"name": "pionp",
+                 "charge": 1,
+                 "mass": 0.1486,
+                 "half-life": 1./2.6033e-8,
+                 "colour": 'xkcd:sky blue-',
+                 "decay_products": [("muonp", "photon")]}
+
+muonp_data = {"name": "muonp",
+                 "charge": 1,
+                 "mass": 0.1118,
+                 "half-life": 1./2.197e-6,
+                 "colour": 'xkcd:pale blue-',
+                 "decay_products": [("positron", "photon")]}
+
+muonn_data = {"name": "muonp",
+                 "charge": -1,
+                 "mass": 0.1118,
+                 "half-life": 1./2.197e-6,
+                 "colour": 'xkcd:neon green-',
+                 "decay_products": [("electron", "photon")]}
+
+positron_data = {"name": "positron",
+                 "charge": 1,
+                 "mass": 5.32e-4,
+                 "half-life": 1,
+                 "colour": 'xkcd:seafoam green-',
+                 "decay_products": []}
+
+electron_data = {"name": "electron",
+                 "charge": -1,
+                 "mass": 5.32e-4,
+                 "half-life": 1,
+                 "colour": 'b-',
+                 "decay_products": []}
+
+photon_data = {"name": "photon",
+                 "charge": 0,
+                 "mass": 0.0001,
+                 "half-life": 1,
+                 "colour": 'xkcd:lime green-',
+                 "decay_products": []}
+
+particle_list = [proton_data,
+                 neutron_data,
+                 pion0_data,
+                 pionm_data,
+                 pionp_data,
+                 muonp_data,
+                 muonn_data,
+                 positron_data,
+                 electron_data,
+                 photon_data]
