@@ -1,0 +1,334 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Nov  5 10:39:29 2017
+
+@author: Hazem
+"""
+
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Nov 04 16:05:17 2017
+
+@author: david
+"""
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+from math import sqrt
+from matplotlib import pyplot, figure
+import numpy as np
+from numpy import exp, log
+import random
+from particle_data import particle_list as pl
+#import plotly
+#plotly.tools.set_credentials_file(username='daceville', api_key='adB84mLRJ0ezQ9A9nUBJ')
+#import plotly.plotly as py
+#import plotly.tools as tls
+#import plotly.graph_objs as go
+
+
+B = 1;
+q = 1.6e-19;
+m = 1e-27;
+x = 0;
+y = 0;
+vx = 0
+vy = 10000
+k = 10**1
+dt = 1e-12
+N = 10000
+#proton = particle(q, m, [0,0], [vx,vy], k, 1e+12, 'r-')
+#electron = particle(-q, m*1./1836, [0,0], [vx,1000*vy], k*1836, 1, 'b-')
+#neutron = particle(0, m, [0,0], [vx,vy], k, 1, 'g-')
+#positron = particle(q, m*1./1836, [0,0], [vx,1000*vy], k*1836, 1, 'y-')
+#sim = simulation(N, B, [proton, electron], dt)
+filename = "particle_data.json"
+
+def get_particle_from_name(name):
+    for part in pl:
+        if part["name"] == name:
+            return particle(charge = part["charge"]*q,
+                            mass = part["mass"]*m,
+                            position = [0,0],
+                            velocity = [0,0],
+                            k = 10./part["mass"],
+                            colour = part["colour"],
+                            name = name)
+    return None
+
+
+class particle:
+    def __init__(self, charge=1, mass=1, position=[0,0], velocity=[0,0], k=1, half_life=1, colour='r', name=None):
+        self.charge = charge
+        self.mass = mass
+        self.position = position
+        self.velocity = velocity
+        self.k = k #*1./mass
+        self.colour = colour
+        self.active = True
+        self.half_life = half_life
+        self.name = name
+        self.decay_products = []
+        
+    def __repr__(self):
+        return self.name
+        
+    def get_decay_products(self):
+        particle_list = []
+        for product in self.decay_products:
+            for particle in pl:
+                if product == particle["name"]:
+                    particle_list.append()
+        
+    def P(self, dt):
+        k = random.random()
+        val = exp(-log(2)*dt * 1./self.half_life)
+        if k > val:
+            return True
+        return False
+
+    def getSpeed(self):
+        return sqrt(self.velocity[0]**2 + self.velocity[1]**2)
+        
+    def update(self, dt=1, B=1):
+        if self.P(dt):
+            self.active = False
+            return False
+        v_initial = self.getSpeed()
+        #print "Entering update, vi = {}".format(v_initial)
+        temp = self.velocity[0]
+        self.velocity[0] += self.charge*self.velocity[1]*B/self.mass * dt
+        self.velocity[1] -= self.charge*temp*B/self.mass * dt
+        v_final = self.getSpeed()
+        #print "In update, vf = {}".format(v_final)
+        if v_final != v_initial:
+            err = v_final * 1./ v_initial
+            self.velocity[0] = self.velocity[0]*1./err
+            self.velocity[1] = self.velocity[1]*1./err
+        #print "In update, err={}".format(err)
+        
+        v_friction = self.k*(self.velocity[0]**2)
+        
+#        v_friction_x = self.k*(self.velocity[0]**2)
+#        v_friction_y = self.k*(self.velocity[1]**2)
+        
+        if self.velocity[0] > 0:
+            self.velocity[0] -= v_friction * dt
+        elif self.velocity[0] < 0:
+            self.velocity[0] += v_friction * dt
+            
+        if self.velocity[1] > 0:
+            self.velocity[1] -= v_friction * dt
+        elif self.velocity[1] < 0:
+            self.velocity[1] += v_friction * dt
+#        
+#        if self.velocity[0] < 0:
+#            if self.velocity[0] + v_friction_x > 0:
+#                self.velocity[0] = 0
+#            else:
+#                self.velocity[0] = self.velocity[0] + v_friction_x
+#        elif  self.velocity[0] > 0:
+#            if self.velocity[0] - v_friction_x < 0:
+#                self.velocity[0] = 0
+#            else:
+#                self.velocity[0] = self.velocity[0] - v_friction_x
+#            
+#        if self.velocity[1] < 0:
+#            if self.velocity[1] + v_friction_y > 0:
+#                self.velocity[1] = 0
+#            else:
+#                self.velocity[1] = self.velocity[1] + v_friction_y
+#        elif  self.velocity[1] > 0:
+#            if self.velocity[1] - v_friction_y < 0:
+#                self.velocity[1] = 0
+#            else:
+#                self.velocity[1] = self.velocity[1] - v_friction_y
+            
+        self.position[0] += self.velocity[0]*dt
+        self.position[1] += self.velocity[1]*dt
+        return True
+        
+class simulation:
+    def __init__(self, N=1e6, B=1, initial_particles=[], dt=1e-12):
+        self.N = N
+        self.B = B
+        self.particle_list = initial_particles
+        self.dt = dt
+        self.is_running = False
+        self.plot_list = [[]]
+        self.x_list = [[] for i in range(len(self.particle_list))]
+        self.y_list = [[] for i in range(len(self.particle_list))]
+        for particle in self.particle_list:
+            self.x_list[self.particle_list.index(particle)].append(particle.position[0])
+            self.y_list[self.particle_list.index(particle)].append(particle.position[1])
+        
+    def add_particle(self, particle):
+        self.particle_list.append(particle)
+        self.x_list.append([particle.position[0]])
+        self.y_list.append([particle.position[1]])
+        
+    def update(self):
+        cont = True
+        count = 0
+        for particle in self.particle_list:
+            count += 1
+            if particle.active:
+                if particle.update(self.dt, self.B):
+                    self.x_list[self.particle_list.index(particle)].append(particle.position[0])
+                    self.y_list[self.particle_list.index(particle)].append(particle.position[1])
+                    if particle.getSpeed() == 0:
+                        particle.active = False
+                else:
+                    decay_products = random.choice(particle.get_decay_products())
+                    decay_particle = []
+                    for part in decay_products:
+                        decay_particle.append(get_particle_from_name(part))
+                    for part in decay_particle:
+                        part.position[0] = particle.position[0]
+                        part.position[1] = particle.position[1]
+                        part.velocity[0] = particle.mass/part.mass * particle.position[0]
+                        part.velocity[1] = particle.mass/part.mass * particle.position[1]
+                        self.add_particle(part)
+                    
+        return cont
+        
+    def run(self):
+        self.is_running = True
+        for i in range(self.N):
+            if not self.update():
+                break
+        self.is_running = False
+        
+    def draw(self):
+        for particle in self.particle_list:
+            pyplot.plot(self.x_list[self.particle_list.index(particle)], 
+                        self.y_list[self.particle_list.index(particle)],
+                        particle.colour)
+        pyplot.show()
+        
+    #def save(self):
+    #    for particle in self.particle_list:
+            
+        
+
+        
+#def main():
+B = 1;
+q = 1.6e-19;
+m = 1e-27;
+x = 0;
+y = 0;
+vx = 0
+vy = 10000
+k = 10**1
+dt = 1e-12
+N = 100000
+#    lamb = get_particle_from_name("lambda")
+proton = get_particle_from_name("proton")
+electron = get_particle_from_name("electron")
+electron.velocity = [0,10000]
+proton.velocity = [0,10000]
+#    neutron = get_particle_from_name("proton")
+#    positron = get_particle_from_name("proton")
+#    print ("Getting lambda: {}",proton)
+#    print ("Getting lambda: {}",electron)
+print ("Generating simulation...")
+sim = simulation(N, B, [proton, electron], dt)
+print ("Running Simulation...")
+sim.run()
+    #print(sim.y_list)
+    
+proton_x_data = sim.x_list[0]
+electron_x_data = sim.x_list[1]
+proton_y_data = sim.y_list[0]
+electron_y_data = sim.y_list[1]
+
+proton_y = []
+proton_x = []    
+electron_x = []
+electron_y=[]
+for i in range(len(proton_x_data)):
+    if i%100==0:
+        proton_x.append(proton_x_data[i])
+ 
+for i in range(len(proton_y_data)):
+    if i%100==0:
+        proton_y.append(proton_y_data[i])
+        
+for i in range(len(electron_x_data)):
+    if i%20==0:
+        electron_x.append(electron_x_data[i])
+ 
+for i in range(len(electron_y_data)):
+    if i%20==0:
+        electron_y.append(electron_y_data[i])
+        
+#print(proton_x)
+    #print(proton_x_data)
+print ("Drawing Simulation...")
+#    def animate(i):
+#        graph.set_data(proton_x_data[:i+1], proton_y_data[:i+1])
+#    #graph.set_data(x2[:i+1], y2[i+1])
+#        return graph
+#print(proton_y_data)
+fig = plt.figure()
+plt.title("Proton")
+plt.xlim(min(proton_x), max(proton_x))
+plt.ylim(min(proton_y), max(proton_y))
+graph, = plt.plot([], [], 'r-')         
+def animate(i):
+    graph.set_data(proton_x[:i+1], proton_y[:i+1])
+    return graph 
+
+#print(electron_x)
+
+#print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+
+#print(electron_y)
+
+fig2 = plt.figure()
+plt.xlim(min(electron_x), max(electron_x))
+plt.ylim(min(electron_y), max(electron_y))
+graph2, = plt.plot([], [], '-b')
+plt.title("Electron")
+def animate2(i):
+    graph2.set_data(electron_x[:i+1], electron_y[:i+1])
+    return graph2 
+
+ani = FuncAnimation(fig, animate, repeat = False, interval=0.0000001)
+
+
+ani2=FuncAnimation(fig2, animate2, repeat=False, interval=0.00000001)
+plt.show()
+
+#    sim.draw()
+#    
+#    for i in range(len(sim.x_list)):
+#        pyplot.plot(sim.x_list[i], sim.y_list[i])
+#        pyplot.plot(sim.x_list[1], sim.y_list[1])
+
+#    with open('data.csv', 'wb') as f:
+#        writer = csv.writer(f)
+#        writer.writerows(sim.x_list)#[0])
+#        writer.writerows(sim.y_list)#[0])
+#        
+#    with open('data.csv', 'rb') as f:
+#        reader = csv.reader(f)
+#        print reader
+#        count = 0
+#        for r in reader:
+#            if count == 0:           
+#                new_x_list = r
+#                
+#                count += 1
+    
+#    with open("x_data.txt", 'w') as xd:
+#        xd.write(str(sim.x_list))
+#    with open("y_data.txt", 'w') as yd:
+#        yd.write(str(sim.y_list))
+    #print sim.x_list
+    #print sim.y_list
+    
+#if __name__ == "__main__":
+#    main()
+#        
+            
