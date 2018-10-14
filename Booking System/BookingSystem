@@ -1,0 +1,81 @@
+import java.util.Scanner; 
+import java.util.Random; 
+
+public class BookingSystem { 
+  
+  private static String[] typeOfRooms = {"double","queen","king"}; 
+  private static Random r = new Random(123); 
+  
+  //returns a random String from the above array.  
+  private static String getRandomType(){ 
+    int index = r.nextInt(typeOfRooms.length); 
+    return typeOfRooms[index]; 
+  } 
+  //returns a random number of rooms between 5 and 50. 
+  private static int getRandomNumberOfRooms(){ 
+    return r.nextInt(50)+1; 
+  } 
+  //End of provided code.  
+  
+  public static void main(String[] args){ 
+    System.out.println("Welcome to your mother!");
+    System.out.println("please enter the name of the hotel you want to book in you windowlicker");
+    Scanner input = new Scanner(System.in);
+    String name = input.nextLine();
+    Room[] roomArray = new Room[getRandomNumberOfRooms()];
+    //Room[] roomArray = new Room[5];
+    for(int i=0; i< roomArray.length; i++){
+      roomArray[i] = new Room(getRandomType());
+    }
+    Hotel h1 = new Hotel(name, roomArray);
+    int option=-1;
+    while(option!=5){
+      System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+      System.out.println("Welcome to " + name + ". Chose one of the following options:");
+      System.out.println("1. Make a reservation");
+      System.out.println("2. Cancel a reservation");
+      System.out.println("3. See invoice");
+      System.out.println("4. See hotel info");
+      System.out.println("5. Exit the booking system");
+      System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+      option = input.nextInt();
+      
+      if(option==1){
+        System.out.println("Please enter your name.");
+        String nameReser = input.next();
+        System.out.println("What type of room would you like?");
+        String typeReser = input.next();
+        int x = h1.createReservation(nameReser, typeReser);
+        if(x==1){
+         System.out.println("room booked under name " + nameReser + " of type " + typeReser + " in hotel " + name); 
+        }
+      }
+      else if(option==4){
+        System.out.println(h1.toString());
+      }
+      else if(option ==3){
+        System.out.println("Enter the name of the reservations you want to check");
+        String invoiceName = input.next();
+        System.out.print(invoiceName + "'s invoice is $");
+        h1.printInvoice(invoiceName);
+      }
+      
+      else if(option ==2){
+        System.out.println("what is the name of the reservation you want to cancel");
+        String nam2 = input.next();
+        System.out.println("what is the type of reservation you want to cancel?");
+        String type2 = input.next();
+        h1.cancelReservation(nam2, type2);
+        
+      }
+      
+      else if(option!=5){
+        System.out.println("you're fucking stupid. this option isnt available");
+      }
+      
+      
+      
+    }
+    System.out.println("it was a pleasure dealing crack with you");
+  } 
+}
