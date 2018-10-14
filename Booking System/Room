@@ -1,0 +1,38 @@
+public class Room{
+  private String type;
+  private double price;
+  private boolean availability;
+  
+  public Room(String t){
+    if(t.equals("double") || t.equals("queen") || t.equals("king")) this.type=t;
+    else throw new IllegalArgumentException("lit the fuck up");
+    
+    if(t.equals("double")) this.price=90;
+    else if(t.equals("queen")) this.price=110;
+    else this.price=150;
+    this.availability=true;
+  }
+  
+  public double getPrice(){
+   return this.price; 
+  }
+  
+  public String getType(){
+   return this.type; 
+  }
+  public boolean getAvailability(){
+   return this.availability; 
+  }
+  
+  public void changeAvailability(){
+   if(this.availability) this.availability=false;
+   else this.availability=true;
+  }
+  
+  public static Room findAvailableRoom(Room[] array, String t){
+    for(int i=0; i<array.length; i++){
+     if(array[i].type.equals(t) && array[i].availability==true) return array[i]; 
+    }
+    return null;
+  }
+}
