@@ -1,0 +1,109 @@
+import java.util.*;
+public class Hotel{
+  
+  private String name;
+  private Room[] rooms;
+  private Reservation[] res;
+  
+  public Hotel(String n, Room[] r){
+    this.name=n;
+    this.rooms = new Room[r.length];
+    for(int i=0; i<r.length; i++){
+      this.rooms[i]=r[i]; 
+    }
+  }
+  
+  private void addReservation(Reservation r){
+    if(res==null){
+      res = new Reservation[1];
+      res[0] = r;
+    }
+    else{
+    Reservation[] temp = new Reservation[this.res.length+1];
+    for(int i=0; i<res.length; i++){
+      temp[i]= res[i];
+    }
+    temp[res.length] = r;
+    res = temp;
+    }
+  }
+  
+  private void removeReservation(String n, String type){
+    int index = -1;
+    for(int i=0; i<res.length; i++){
+      if(res[i].getName().equals(n) && res[i].getRoom().getType().equals(type)){ index = i;}
+    }
+    if (index==-1){ throw new NoSuchElementException("there was no reservation with this name or room type");}
+    else{
+      Reservation[] temp = new Reservation[res.length-1];
+      for(int i=0; i<index; i++){
+        temp[i]=res[i]; 
+      }
+      res[index].getRoom().changeAvailability();
+      for(int i=index; i<res.length-1; i++){
+        temp[i]=res[i+1]; 
+      }
+      res = temp;
+    }
+  }
+  public int createReservation(String n, String type){
+    Room availableRoom = Room.findAvailableRoom(rooms, type);
+    
+    if(availableRoom == null){
+      System.out.println("No such room is available"); 
+      return -1;
+    }
+    else{
+      Reservation lmao = new Reservation(availableRoom, n);
+      this.addReservation(lmao);
+      //res[i] = new Reservation(availableRoom, n);
+      availableRoom.changeAvailability();
+      System.out.println("done");
+      return 1;
+    }
+    
+  }
+  
+  public void cancelReservation(String n, String type){
+    try{
+      this.removeReservation(n, type);
+      System.out.println("reservation canceled");
+    }
+    catch(NoSuchElementException e){
+      System.out.println("No such reservation exists"); 
+    }
+    
+    
+  }
+  
+  public void printInvoice(String n){
+    double result=0;
+    for(int i=0; i<this.res.length; i++){
+      if(this.res[i].getName().equals(n)){
+        result = result + this.res[i].getRoom().getPrice(); 
+      }
+    }
+    System.out.println(result);
+  }
+  
+  public String toString(){
+    int king=0;
+    int queen=0;
+    int d=0;
+    for(int i=0; i<this.rooms.length; i++){
+      if(rooms[i].getType().equals("king") && rooms[i].getAvailability()){
+        king++;
+      }
+      if(rooms[i].getType().equals("queen") && rooms[i].getAvailability()){
+        queen++;
+      }
+      if(rooms[i].getType().equals("double") && rooms[i].getAvailability()){
+        d++;
+      }
+      
+      
+    }
+    return("Hotel name: " + this.name + ".\n" + "Available rooms: " + king + " kings, " + queen + " queens, " + d + " doubles.");
+  }
+  
+}
