@@ -1,0 +1,18 @@
+public class Reservation{
+  private String name;
+  private Room roomReserved;
+  
+  public Reservation(Room r, String n){
+   this.roomReserved = r;
+   this.name=n;
+  }
+  
+  public String getName(){
+    return this.name;
+  }
+  
+  public Room getRoom(){
+   return this.roomReserved; 
+  }
+  
+}
