@@ -1,0 +1,93 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class pathfollow : MonoBehaviour {
+	public GameObject[] points = new GameObject[15];
+	private GameObject vehicle;
+	public GameObject s;
+	//private Rigidbody rb;
+
+	int point;
+	float radius;
+	//Vector3 startPos;
+
+
+	// Use this for initialization
+	void Start () {
+		if (vehicle == null){
+            vehicle = GameObject.FindWithTag("Player").transform.GetChild(0).gameObject;
+		}
+        //Debug.Log("target " + point1.transform.position);
+        point = 0;
+        radius = 5f;
+        //rb = vehicle.transform.parent.GetComponent<Rigidbody>();
+        //startPos = vehicle.transform.position;
+	}
+	
+	// Update is called once per frame
+	void Update () {
+		
+		if(point < points.Length-1){
+         	//Debug.Log("point = " + point);
+         	vehicle.GetComponent<Vehicle>().seek(points[point].transform.position);
+         	//if (point == 0) follow(s, points[point]);
+         	//else follow(points[point], points[point+1]);
+         	//follow();
+         	Vector3 pos = vehicle.transform.position;
+
+
+
+         	if ((pos - points[point].transform.position).magnitude < 6){
+         		//Debug.Log("point" + point + ", vx = " + rb.velocity.x + "and vz = " + rb.velocity.z);
+				point++;
+			}
+
+         }
+
+         if(point == points.Length-1){
+         	//Debug.Log("in arrive, vx = " + rb.velocity.x + "and vz = " + rb.velocity.z);
+
+         	vehicle.GetComponent<Vehicle>().arrive(points[points.Length-1].transform.position);
+
+         }
+         //*/
+	}
+
+
+	//sP(future, current, goal)
+	Vector3 scalarProjection(Vector3 p, Vector3 a, Vector3 b){
+		Vector3 ap = p - a;
+		Vector3 ab = b - a;
+
+		return Vector3.Project(ap, ab);
+	}
+
+	void follow(GameObject point1, GameObject point2){
+
+		Vector3 predict = vehicle.GetComponent<Vehicle>().rb.velocity;
+		predict = predict.normalized;
+		predict = new Vector3(predict.x*10, predict.y, predict.z*10);
+		
+
+		Vector3 predictLoc = predict + vehicle.transform.position;
+		Debug.Log("predictLoc " + predictLoc);
+
+		Vector3 p1 = point1.transform.position;
+		Vector3 p2 = point2.transform.position;
+
+		Vector3 normal = scalarProjection(predictLoc, p1, p2);
+
+
+		Vector3 dir = p2 - p1;
+		dir = dir.normalized;
+		dir = new Vector3(dir.x * 10, dir.y, dir.z*10);
+
+		Vector3 target = normal + dir;
+
+		float distance = Vector3.Distance(predictLoc, normal);
+
+		if(distance > radius)  vehicle.GetComponent<Vehicle>().seek(target);
+
+	}
+}
