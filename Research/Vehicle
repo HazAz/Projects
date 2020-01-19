@@ -1,0 +1,248 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Vehicle : MonoBehaviour {
+	public float maxSpeed;
+	public float maxForce;
+	public Rigidbody rb;
+
+	public GameObject wheel1;
+	public GameObject wheel2;
+
+	//public GameObject pivot;
+	public GameObject top;
+	Vector3 oldEulerAngles;
+	private bool clockwise;
+	private bool counter;
+
+	//public float W, b, c, L, h, g, Ax;
+	
+
+	// Use this for initialization
+	void Start () {
+		//rb = transform.GetChild(0).GetComponent<Rigidbody>();
+		//rb = GetComponent<Rigidbody>();
+		rb = GetComponent<Rigidbody>();
+		
+		oldEulerAngles = transform.rotation.eulerAngles;
+		clockwise = false;
+		counter = false;
+	}
+	
+	// Update is called once per frame
+	void FixedUpdate () {
+		top.transform.position = new Vector3(transform.position.x, transform.position.y + 0.82f, transform.position.z);
+
+		transform.rotation = Quaternion.LookRotation(new Vector3(rb.velocity.z, rb.velocity.y, -rb.velocity.x));
+		top.transform.rotation = Quaternion.LookRotation(new Vector3(rb.velocity.z, rb.velocity.y, -rb.velocity.x));
+		
+		float hehexd = transform.eulerAngles.y;
+		wheel1.transform.eulerAngles = new Vector3(0f, 360f, 0f);
+		wheel2.transform.eulerAngles = new Vector3(0f, 360f, 0f);
+
+		if (!(hehexd > 195 || hehexd < 340)){
+			top.transform.GetChild(0).transform.Rotate(new Vector3(-top.transform.GetChild(0).transform.rotation.x, 0f,  0f));
+		}
+
+		if (hehexd > 195 || hehexd < 340){
+			//counter = false;
+			//clockwise = false;
+			Debug.Log("hehexd " + hehexd + " old " + oldEulerAngles.y + " counter " + counter + " clockwise " + clockwise);
+			if(hehexd - oldEulerAngles.y < -1f){
+				clockwise = false;
+				counter = true;
+			}
+			else if(hehexd - oldEulerAngles.y > 1f){
+				clockwise = true;
+				counter = false;
+			}
+			else{
+				counter = false;
+				clockwise = false;
+			}
+			
+		
+
+
+			//float rot = wheel1.transform.eulerAngles.y;
+			
+			//Debug.Log("rot " + rot + " and wheel " + wheel1.transform.eulerAngles.y);
+		
+			//float difference = rot - hehexd;
+
+			if(counter){
+			
+				wheel1.transform.eulerAngles = new Vector3(0f, hehexd - 1.2f*(hehexd - oldEulerAngles.y), 0f);
+				//wheel1.transform.Rotate(new Vector3(0f, -1f*(hehexd - oldEulerAngles.y), 0f));
+				wheel2.transform.eulerAngles = new Vector3(0f, hehexd - 1.2f*(hehexd - oldEulerAngles.y), 0f);
+				//wheel2.transform.Rotate(new Vector3(0f, -1f*(hehexd - oldEulerAngles.y), 0f));
+
+				top.transform.GetChild(0).transform.Rotate(new Vector3(-0.2f, 0f,  0f));
+			}
+			//if(difference > 10){
+			else if(clockwise){
+	
+				wheel1.transform.eulerAngles = new Vector3(0f, hehexd + 1.2f*(hehexd - oldEulerAngles.y), 0f);
+				wheel2.transform.eulerAngles = new Vector3(0f, hehexd + 1.2f*(hehexd - oldEulerAngles.y), 0f);
+				//top.transform.GetChild(0).transform.eulerAngles = new Vector3(hehexd + 0.1f*(hehexd - oldEulerAngles.y), top.transform.eulerAngles.y, 0f);
+				//wheel1.transform.Rotate(new Vector3(0f, +1f*(hehexd - oldEulerAngles.y), 0f));
+
+				//wheel2.transform.Rotate(new Vector3(0f, +1f*(hehexd - oldEulerAngles.y), 0f));
+
+				top.transform.GetChild(0).transform.Rotate(new Vector3(0.2f, 0f,  0f));
+			}
+			else{
+				top.transform.GetChild(0).transform.Rotate(new Vector3(-top.transform.GetChild(0).transform.rotation.x, 0f,  0f));
+				//wheel1.transform.Rotate(new Vector3(0f, -wheel1.transform.rotation.y, 0f));
+				//wheel2.transform.Rotate(new Vector3(0f, -wheel2.transform.rotation.y, 0f));
+
+
+			}
+			oldEulerAngles = transform.eulerAngles;
+		
+		}
+		/*
+		// if (oldEulerAngles != transform.rotation.eulerAngles){
+		 	if(oldEulerAngles.y - transform.rotation.eulerAngles.y < -2){
+		 		if(oldEulerAngles.y - transform.rotation.eulerAngles.y > -15){
+		 			wheel1.transform.eulerAngles = new Vector3(0f, -10f + transform.rotation.y, 0f);
+					wheel2.transform.eulerAngles = new Vector3(0f, -10f + transform.rotation.y, 0f);
+		 		}
+		 		else{
+		 			wheel1.transform.eulerAngles = new Vector3(0f, -15f + transform.rotation.y, 0f);
+					wheel2.transform.eulerAngles = new Vector3(0f, -15f + transform.rotation.y, 0f);
+		 		}
+
+		 	}
+		 	else if (oldEulerAngles.y - transform.rotation.eulerAngles.y > 2){
+		 		if(oldEulerAngles.y - transform.rotation.eulerAngles.y < 15){
+		 			wheel1.transform.eulerAngles = new Vector3(0f, 10f + transform.rotation.y, 0f);
+					wheel2.transform.eulerAngles = new Vector3(0f, 10f + transform.rotation.y, 0f);
+		 		}
+		 		else{
+		 			wheel1.transform.eulerAngles = new Vector3(0f, 15f + transform.rotation.y, 0f);
+					wheel2.transform.eulerAngles = new Vector3(0f, 15f + transform.rotation.y, 0f);
+		 		}
+
+		 	}
+		 	oldEulerAngles = transform.rotation.eulerAngles;
+           	      
+     	//}
+     	*/
+	
+	}
+
+
+
+	
+
+	public void seek(Vector3 target){
+		//Debug.Log("In seek");
+		Vector3 desired = target - transform.position;
+
+		desired.Normalize();
+		desired = new Vector3(desired.x * maxSpeed, 0, desired.z * maxSpeed);
+		
+		//Debug.Log("position: " + transform.position + ". desired: " + desired);
+		//Debug.Log("desired " + desired);
+
+		Vector3 steer = desired - rb.velocity;
+		//Debug.Log("Steer " + steer);
+		steer = Vector3.ClampMagnitude(steer, maxForce);
+
+
+		//Debug.Log("steer1 " + steer);
+
+		//Start, Impulse, Acceleration, Force, VelocityChange
+		rb.AddForce(steer.x, 0, steer.z, ForceMode.Impulse);
+
+		/*
+		if(rb.velocity.x != 0 && rb.velocity.z != 0){
+			float angle = Vector3.Angle(desired, rb.velocity);
+			//float angle = Mathf.Acos((Vector3.Dot())/())
+			Debug.Log("desired " + desired + ", vel = " + rb.velocity + ", angle " + angle);
+			transform.Rotate(new Vector3(0f, angle, 0f));
+			top.transform.Rotate(new Vector3(0f, angle, 0f));
+		}
+		*/
+	}
+
+
+	public void arrive(Vector3 target){
+		Debug.Log("in arrive");
+		Vector3 desired = target - transform.position;
+		float d = desired.magnitude;
+
+		if(d < 10){
+			float dist = d/10 * maxSpeed;
+			desired.Normalize();
+			desired = new Vector3(desired.x * dist, 0, desired.z * dist);
+		}
+		else{
+			desired.Normalize();
+			desired = new Vector3(desired.x * maxSpeed, 0, desired.z * maxSpeed);
+		}
+
+		Vector3 steer = desired - rb.velocity;
+
+		steer = Vector3.ClampMagnitude(steer, maxForce);
+
+		//Start, Impulse, Acceleration, Force, VelocityChange
+		if(d > 1){
+			rb.AddForce(steer.x, 0, steer.z, ForceMode.Impulse);
+		}
+		//rb.AddTorque(steer.x, 0, steer.z, ForceMode.VelocityChange);
+	}
+
+	void rotate(){
+		float x = rb.velocity.x;
+		float z = rb.velocity.z;
+
+		if(z > -0.4 && z < 0.4) z = 0;
+		//if(z > 3) z = 3;
+		//if(z < -3) z = -3;
+
+		float yRot;
+
+		if((x<0 && z<0)) yRot = Mathf.Atan(-z/x);
+
+		else if (z == 0){
+			if(x < 0) yRot = 0;
+			else yRot = Mathf.PI;
+		} 
+
+		else yRot= Mathf.Atan(z/x);
+		//yRot = Mathf.Atan(z/x) * 180 / Mathf.PI;
+		
+		if(transform.position.x > 0){
+			if(x > 0){
+				transform.Rotate(new Vector3(0f, -yRot, 0f));
+				top.transform.Rotate(new Vector3(0f, -yRot, 0f));
+			}
+			else{
+				transform.Rotate(new Vector3(0f, yRot, 0f));
+				top.transform.Rotate(new Vector3(0f, yRot, 0f));
+			}
+		}
+		else{
+			transform.Rotate(new Vector3(0f, -yRot, 0f));
+			top.transform.Rotate(new Vector3(0f, -yRot, 0f));
+		}
+		
+		Debug.Log("x: " + x + ", z: " + z + ", yRot: " + yRot  + ", pos = " + transform.position.x);
+		
+
+
+
+		//transform.RotateAround(pivot.transform.position, new Vector3(0f, 1f, 0f), yRot);
+	}
+
+	void dynamicLoad(){
+		
+		//float Wf = W * c/L - h*W/(g*L) * Ax;
+		//float Wr = W * b/L + h*W/(g*L) * Ax;
+
+		//ratio of Wf/Wr determines ratio of rotation of vehicle and position with respect
+	}
+}
