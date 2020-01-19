@@ -1,0 +1,44 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class wheels : MonoBehaviour {
+	//private Vector3 move = Vector3.zero;
+	private float rot;
+	private float push;
+	private float rotationSpeed = 100.0f;
+	private float speed = 10.0f;
+	private Rigidbody rb;
+	//private CharacterController controller;
+
+
+	// Use this for initialization
+	void Start () {
+		//controller = GetComponent<CharacterController>()
+		rb = transform.parent.parent.GetComponent<Rigidbody>();
+	}
+	
+	// Update is called once per frame
+	void Update () {
+		//move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+		//move = Vector3.ClampMagnitude (move, 1);
+       	rot = Input.GetAxis("Horizontal") * rotationSpeed;
+       	push = Input.GetAxis("Vertical") * speed;
+
+        rot *= Time.deltaTime;
+        //if(rot > 15) rot = 15;
+        //if (rot < -15) rot = -15;
+        //Debug.Log("rot " + rot + " and y " + transform.eulerAngles.y);
+
+        float yRot = transform.rotation.y * 180/Mathf.PI;
+
+        if(yRot > 15 && rot > 0) transform.Rotate(0f, 0f, 0f);
+        else if (yRot < -15 && rot < 0)  transform.Rotate(0f, 0f, 0f);
+        else transform.Rotate(0, rot, 0);
+
+        //Vector3 dir = Quaternion.AngleAxis(yRot, Vector3.forward) * Vector3.right;
+        //rb.AddForce(-1*dir*push*speed);
+        rb.AddForce(Vector3.left*push * speed);
+
+	}
+}
